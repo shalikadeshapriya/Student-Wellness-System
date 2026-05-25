@@ -15,8 +15,10 @@ export default function RegisterPage() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [formData, setFormData] = useState({
-    fullName: '',
-    studentId: '',
+    role: '',
+    firstName: '',
+    lastName: '',
+    idNumber: '',
     email: '',
     password: '',
     confirmPassword: ''
@@ -24,20 +26,44 @@ export default function RegisterPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     if (formData.password !== formData.confirmPassword) {
       alert('Passwords do not match')
       return
     }
-    
+
     setIsLoading(true)
-    
-    // Simulate registration - in production, this would call an API
+
     await new Promise(resolve => setTimeout(resolve, 1000))
-    
-    // Redirect to dashboard on success
+
     router.push('/dashboard')
     setIsLoading(false)
+  }
+
+  const getIdLabel = () => {
+    switch (formData.role) {
+      case 'student':
+        return 'Student ID'
+      case 'doctor':
+        return 'Doctor ID'
+      case 'pharmacist':
+        return 'Pharmacist ID'
+      default:
+        return 'ID Number'
+    }
+  }
+
+  const getIdPlaceholder = () => {
+    switch (formData.role) {
+      case 'student':
+        return 'Enter your student ID'
+      case 'doctor':
+        return 'Enter your doctor ID'
+      case 'pharmacist':
+        return 'Enter your pharmacist ID'
+      default:
+        return 'Enter your ID number'
+    }
   }
 
   return (
@@ -52,15 +78,15 @@ export default function RegisterPage() {
             <p className="text-sm text-muted-foreground">Create an account</p>
           </div>
         </CardHeader>
-        
+
         <form onSubmit={handleSubmit}>
           <CardContent className="space-y-4">
-            {/* Role Selection */}
             <div className="space-y-2">
               <Label htmlFor="role">Select Role</Label>
-
               <select
                 id="role"
+                value={formData.role}
+                onChange={(e) => setFormData({ ...formData, role: e.target.value })}
                 className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                 required
               >
@@ -70,41 +96,43 @@ export default function RegisterPage() {
                 <option value="pharmacist">Pharmacist</option>
               </select>
             </div>
-            
+
             <div className="space-y-2">
               <Label htmlFor="firstName">First Name</Label>
-
               <Input
                 id="firstName"
                 type="text"
                 placeholder="First name"
+                value={formData.firstName}
+                onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
                 required
               />
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="lastName">Last Name</Label>
-
               <Input
                 id="lastName"
                 type="text"
                 placeholder="Last name"
+                value={formData.lastName}
+                onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
                 required
               />
             </div>
-            
+
             <div className="space-y-2">
-              <Label htmlFor="studentId">Student ID</Label>
+              <Label htmlFor="idNumber">{getIdLabel()}</Label>
               <Input
-                id="studentId"
+                id="idNumber"
                 type="text"
-                placeholder="Enter your student ID"
-                value={formData.studentId}
-                onChange={(e) => setFormData({ ...formData, studentId: e.target.value })}
+                placeholder={getIdPlaceholder()}
+                value={formData.idNumber}
+                onChange={(e) => setFormData({ ...formData, idNumber: e.target.value })}
                 required
               />
             </div>
-            
+
             <div className="space-y-2">
               <Label htmlFor="email">Email Address</Label>
               <Input
@@ -116,7 +144,7 @@ export default function RegisterPage() {
                 required
               />
             </div>
-            
+
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
               <div className="relative">
@@ -137,7 +165,7 @@ export default function RegisterPage() {
                 </button>
               </div>
             </div>
-            
+
             <div className="space-y-2">
               <Label htmlFor="confirmPassword">Confirm Password</Label>
               <div className="relative">
@@ -159,12 +187,12 @@ export default function RegisterPage() {
               </div>
             </div>
           </CardContent>
-          
+
           <CardFooter className="flex flex-col gap-4">
             <Button type="submit" className="w-full" size="lg" disabled={isLoading}>
               {isLoading ? 'Creating account...' : 'Register'}
             </Button>
-            
+
             <p className="text-center text-sm text-muted-foreground">
               Already have an account?{' '}
               <Link href="/login" className="font-medium text-primary hover:underline">
